@@ -13,6 +13,17 @@
     <!--Importacion de sweetalert2-->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Document</title>
+        <style>
+        .formulario{
+            margin: auto;
+            width: 500px;
+        }
+        .content-button{
+            margin-top: 50px;
+            justify-content: center;
+            display: flex;
+        }
+    </style>
 </head>
 
 <body>
@@ -40,5 +51,34 @@
         {% endblock %}
     </div>
 </body>
-
+<script>
+    document.querySelector('.formulario').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        let formData = new FormData(this);
+        
+        fetch('/diagnostico/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(diagnostico)
+            let resultadoHtml = '<h2>Posibles diagnósticos:</h2><ul>';
+            data.diagnosticos.forEach(diagnostico => {
+                resultadoHtml += `<li>${diagnostico}</li>`;
+            });
+            resultadoHtml += '</ul>';
+            document.getElementById('resultado').innerHTML = resultadoHtml;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('resultado').innerHTML = '<p>Ocurrió un error al procesar el diagnóstico.</p>';
+        });
+    });
+    
+</script>
 </html>
